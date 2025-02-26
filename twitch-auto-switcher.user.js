@@ -2,8 +2,8 @@
 // @name         Twitch Auto Switcher
 // @namespace    http://tampermonkey.net/
 // @version      0.9.4
-// @downloadURL  https://github.com/dioarya/twitch-auto-switcher/raw/master/twitch-auto-switcher.js
-// @updateURL    https://github.com/dioarya/twitch-auto-switcher/raw/master/twitch-auto-switcher.js
+// @downloadURL  https://github.com/dioarya/twitch-auto-switcher/raw/master/twitch-auto-switcher.user.js
+// @updateURL    https://github.com/dioarya/twitch-auto-switcher/raw/master/twitch-auto-switcher.user.js
 // @description  Automatically switches to a live Twitch streamer inside the customizable list, which nth *live* streamer chosen customizable per tab
 // @author       Arxhield
 // @match        https://www.twitch.tv/*
