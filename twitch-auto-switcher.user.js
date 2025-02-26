@@ -119,7 +119,7 @@
         const dropdown = document.getElementById("twitch-switcher-dropdown");
         let nextDisplay = dropdown.style.display === "flex" ? "none" : "flex";
         if (nextDisplay != "none") {
-            if (!initialized) await updateLiveStreamers(true);
+            await updateLiveStreamers(true);
             updateDropdown();
         }
         dropdown.style.display = nextDisplay;
@@ -150,7 +150,7 @@
             let liveStreamersGolden = JSON.parse(localStorage.getItem("liveStreamers")) ?? [];
             let liveStreamersLastUpdateGolden = JSON.parse(localStorage.getItem("liveStreamersLastUpdate")) ?? 0;
             localStorage.setItem("liveStreamersLastObserved", Date.now());
-            if (liveStreamersLastUpdateGolden - Date.now() <= 30000) {
+            if (Date.now() - liveStreamersLastUpdateGolden <= 30000) {
                 initialized = true;
                 liveStreamers = liveStreamersGolden;
                 liveStreamersLastUpdate = liveStreamersLastUpdateGolden;
