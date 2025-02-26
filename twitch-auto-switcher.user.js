@@ -4,7 +4,7 @@
 // @downloadURL  https://github.com/dioarya/twitch-auto-switcher/raw/master/twitch-auto-switcher.user.js
 // @updateURL    https://github.com/dioarya/twitch-auto-switcher/raw/master/twitch-auto-switcher.user.js
 // @description  Automatically switches to a live Twitch streamer inside the customizable list, which nth *live* streamer chosen customizable per tab
-// @author       Arxhield
+// @author       Arxhield/Dioarya
 // @match        https://www.twitch.tv/*
 // @grant        none
 // ==/UserScript==
