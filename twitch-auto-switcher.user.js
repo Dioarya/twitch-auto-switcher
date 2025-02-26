@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Twitch Auto Switcher
-// @version      0.9.5
+// @version      0.9.6
 // @downloadURL  https://github.com/dioarya/twitch-auto-switcher/raw/master/twitch-auto-switcher.user.js
 // @updateURL    https://github.com/dioarya/twitch-auto-switcher/raw/master/twitch-auto-switcher.user.js
 // @description  Automatically switches to a live Twitch streamer inside the customizable list, which nth *live* streamer chosen customizable per tab
