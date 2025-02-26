@@ -179,7 +179,7 @@
         container2.className = "unselectable";
 
         label.id = "twitch-switcher-dropdown-btn"
-        label.textContent = "Twitch Switcher v1.9";
+        label.textContent = "Twitch Switcher v0.9.5";
         label.style.margin = "5px";
         label.style.borderRadius = "5px";
         label.style.whiteSpace = "nowrap";
