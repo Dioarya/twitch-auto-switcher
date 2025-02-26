@@ -183,8 +183,8 @@
         label.style.margin = "5px";
         label.style.borderRadius = "5px";
         label.style.whiteSpace = "nowrap";
-        label.addEventListener("mouseover", () => { element.style.backgroundColor = "rgba(255, 255, 255, 0.1)"; });
-        label.addEventListener("mouseout", () => { element.style.backgroundColor = ""; });
+        label.addEventListener("mouseover", () => { label.style.backgroundColor = "rgba(255, 255, 255, 0.1)"; });
+        label.addEventListener("mouseout", () => { label.style.backgroundColor = ""; });
         label.addEventListener("click", toggleDropdown);
 
         const input = document.createElement("input");
