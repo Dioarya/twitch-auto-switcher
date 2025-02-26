@@ -119,7 +119,7 @@
         const dropdown = document.getElementById("twitch-switcher-dropdown");
         let nextDisplay = dropdown.style.display === "flex" ? "none" : "flex";
         if (nextDisplay != "none") {
-            await updateLiveStreamers(true);
+            if (!initialized) updateLiveStreamers(true);
             updateDropdown();
         }
         dropdown.style.display = nextDisplay;
