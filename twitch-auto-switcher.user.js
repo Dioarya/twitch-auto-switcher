@@ -12,6 +12,19 @@
 (function() {
     'use strict';
 
+    // The list below is customizable.
+    const streamers = ["papamutt", "markiplier", "moistcr1tikal", "ludwig", "cdawgva", "zajef77", "zy0xxx", "ottomated", "qtcinderella", "dish", "emiru", "rtgame", "slimecicle", "gigguk", "sallyisadog", "tinakitten", "fanfan", "39daph", "kkatamina", "disguisedtoast", "lilypichu", "pokimane", "masayoshi", "quarterjade", "scarra", "yvonnie", "itsryanhiga", "ariasaki", "gmhikaru", "gothamchess", "botezlive", "dantes", "loltyler1", "drututt", "keshaeuw", "hasanabi", "shroud", "btmc", "zhangkuu", "vincewuff", "skaifox", "zephyxus", "toastedtoastertv", "valorant", "lifeline", "tarik", "kyedae", "ninja", "kettletoro", "glittr", "okcode", "xlice", "hilto77", "branonline", "asianguystream", "enviosity", "tsikyo", "doro44", "mtashed", "xqc", "binfy", "zylice", "kariyu", "aceu", "philza", "tubbo", "sneegsnag", "wilbursoot", "quackitytoo", "tapl", "foolish_gamers", "gosugeneraltv", "zyruvias", "jackie_codes", "fedmyster"];
+    let currentLiveStreamer = null;
+    let liveStreamers = [];
+    let liveStreamersLastUpdate = Date.now();
+    let autoSwitch = (JSON.parse(localStorage.getItem("nthLiveStreamerList")) ?? []).length != 0;
+    let initialized = false;
+    let scanning = false;
+    const status = document.createElement("span");
+    const label = document.createElement("span");
+    const dropdown = document.createElement("div");
+    var golden = goldenAvailable();
+
     let style = document.createElement("style");
     style.textContent = `
     .unselectable {
@@ -21,7 +34,61 @@
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
-    }`;
+    }
+
+    .twitch-switcher-hud {
+        display: flex;
+        align-items: center;
+        background-color: var(--color-opac-gd-1);
+        border-radius: 5px;
+        gap: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .twitch-switcher-status {
+        padding: 10px;
+        white-space: nowrap;
+    }
+
+    .twitch-switcher-dropdown {
+        display: block;
+        position: relative;
+        width: 100%;
+    }
+
+    .twitch-switcher-label {
+        border-radius: 5px;
+        white-space: nowrap;
+    }
+
+    .twitch-switcher-input {
+        width: 30px;
+    }
+
+    .twitch-switcher-autoswitch {
+
+    }
+
+    .twitch-switcher-dropdown-content {
+        display: none;
+        position: absolute;
+        white-space: nowrap;
+        background-color: var(--color-hinted-grey-1);
+        width: 100%;
+        overflow-x: auto;
+        flex-direction: column;
+        border-radius: 5px;
+        padding: 5px;
+    }
+    `;
+
+    // TODO: Add a switch for status:
+    //           - X symbol red uninitialized
+    //           - check symbol green initialized
+    //           - fraction for progress
 
     document.head.appendChild(style);
 
@@ -69,20 +136,20 @@
         }
     }
 
+    function goldenAvailable() {
+        return (Date.now() - (localStorage.getItem("goldenLastSeen") ?? 0) > 5000);
+    }
+
     async function heartbeatGolden() {
         if (golden) {
-            label.style.color = "gold";
             localStorage.setItem("goldenLastSeen", Date.now());
         }
         if (goldenAvailable()) {
             golden = true;
+            label.style.color = "gold";
             localStorage.setItem("goldenLastSeen", Date.now());
             if (!initialized) await updateLiveStreamers();
         }
-    }
-
-    function goldenAvailable() {
-        return (Date.now() - (localStorage.getItem("goldenLastSeen") ?? 0) > 5000);
     }
 
     function updateDropdown() {
@@ -110,13 +177,13 @@
         }
 
         element.style.borderRadius = "4px";
-        element.addEventListener("mouseover", () => { element.style.backgroundColor = "rgba(255, 255, 255, 0.1)"; });
+        element.addEventListener("mouseover", () => { element.style.backgroundColor = "rgba(83, 83, 95, 0.38)"; });
         element.addEventListener("mouseout", () => { element.style.backgroundColor = ""; });
         return element;
     }
 
     async function toggleDropdown() {
-        const dropdown = document.getElementById("twitch-switcher-dropdown");
+        const dropdown = document.getElementById("twitch-switcher-dropdown-content");
         let nextDisplay = dropdown.style.display === "flex" ? "none" : "flex";
         if (nextDisplay != "none") {
             if (!initialized) updateLiveStreamers(true);
@@ -124,19 +191,6 @@
         }
         dropdown.style.display = nextDisplay;
     }
-
-    // The list below is customizable.
-    const streamers = ["papamutt", "markiplier", "moistcr1tikal", "ludwig", "cdawgva", "zajef77", "zy0xxx", "ottomated", "qtcinderella", "dish", "emiru", "rtgame", "slimecicle", "gigguk", "sallyisadog", "tinakitten", "fanfan", "39daph", "kkatamina", "disguisedtoast", "lilypichu", "pokimane", "masayoshi", "quarterjade", "scarra", "yvonnie", "itsryanhiga", "ariasaki", "gmhikaru", "gothamchess", "botezlive", "dantes", "loltyler1", "drututt", "keshaeuw", "hasanabi", "shroud", "btmc", "zhangkuu", "vincewuff", "skaifox", "zephyxus", "toastedtoastertv", "valorant", "lifeline", "tarik", "kyedae", "ninja", "kettletoro", "glittr", "okcode", "xlice", "hilto77", "branonline", "asianguystream", "enviosity", "tsikyo", "doro44", "mtashed", "xqc", "binfy", "zylice", "kariyu", "aceu", "philza", "tubbo", "sneegsnag", "wilbursoot", "quackitytoo", "tapl", "foolish_gamers", "gosugeneraltv", "zyruvias", "jackie_codes", "fedmyster"];
-    let currentLiveStreamer = null;
-    let liveStreamers = [];
-    let liveStreamersLastUpdate = Date.now();
-    let autoSwitch = (JSON.parse(localStorage.getItem("nthLiveStreamerList")) ?? []).length != 0;
-    let initialized = false;
-    let scanning = false;
-    var golden = goldenAvailable();
-    var progress = document.createElement("span");
-    var label = document.createElement("span");
-    var dropdown = document.createElement("div");
 
     function saveSyncState() {
         if (golden) {
@@ -158,72 +212,49 @@
         }
     }
 
-
     function createUI() {
         const container = document.createElement("div");
-        container.style.display = "flex";
-        container.style.alignItems = "center";
-        container.style.margin = "10px";
-        container.style.backgroundColor = "rgba(83, 83, 95, 0.38)";
-        container.style.borderRadius = "4px";
+        container.className = "twitch-switcher-hud";
 
-        progress.textContent = "";
-        progress.hidden = true;
-        progress.style.margin = "5px";
-        progress.style.whiteSpace = "nowrap";
+        status.className = "twitch-switcher-status";
+        status.hidden = true;
 
         const container2 = document.createElement("div");
-        container2.style.position = "relative";
-        container2.style.display = "block";
-        container2.style.width = "100%";
-        container2.className = "unselectable";
+        container2.classList = "unselectable twitch-switcher-dropdown";
 
-        label.id = "twitch-switcher-dropdown-btn"
         label.textContent = "Twitch Switcher v0.9.5";
-        label.style.margin = "5px";
-        label.style.borderRadius = "5px";
-        label.style.whiteSpace = "nowrap";
-        label.addEventListener("mouseover", () => { label.style.backgroundColor = "rgba(255, 255, 255, 0.1)"; });
+        label.className = "twitch-switcher-label";
+        label.id = "twitch-switcher-dropdown-btn";
+        label.addEventListener("mouseover", () => { label.style.backgroundColor = "var(--color-opac-gd-1)"; });
         label.addEventListener("mouseout", () => { label.style.backgroundColor = ""; });
         label.addEventListener("click", toggleDropdown);
 
         const input = document.createElement("input");
+        input.className = "twitch-switcher-input";
         input.type = "number";
         input.min = "0";
-        input.style.width = "30px";
-        input.style.margin = "10px";
-        input.id = "twitchSwitcherInput";
+        input.id = "twitch-switcher-input";
         let nthLiveStreamerList = JSON.parse(localStorage.getItem("nthLiveStreamerList")) ?? [];
         if (nthLiveStreamerList.length == 0) nthLiveStreamerList = [0];
         input.value = nthLiveStreamerList.shift();
         localStorage.setItem("nthLiveStreamerList", JSON.stringify(nthLiveStreamerList));
 
         const checkbox = document.createElement("input");
+        checkbox.className = "twitch-switcher-autoswitch"
         checkbox.type = "checkbox";
         checkbox.checked = autoSwitch;
-        checkbox.style.margin = "10px";
-        checkbox.id = "twitchSwitcherCheckbox";
         checkbox.addEventListener("change", () => {
             autoSwitch = checkbox.checked;
             if (autoSwitch) updateCurrentStreamer();
         });
 
-        dropdown.id = "twitch-switcher-dropdown";
-        dropdown.style.display = "none";
-        dropdown.style.position = "absolute";
-        dropdown.style.whiteSpace = "nowrap";
-        dropdown.style.backgroundColor = "rgb(24, 24, 27)";
-        dropdown.style.width = "100%";
-        dropdown.style.overflowX = "auto";
-        dropdown.style.flexDirection = "column";
-        dropdown.style.borderRadius = "5px";
-        dropdown.style.padding = "5px";
-        dropdown.style.border = "rgba(255, 255, 255, 0.3)";
+        dropdown.className = "twitch-switcher-dropdown-content"
+        dropdown.id = "twitch-switcher-dropdown-content";
 
         container2.appendChild(label);
         container2.appendChild(dropdown);
 
-        container.appendChild(progress);
+        container.appendChild(status);
         container.appendChild(container2);
         container.appendChild(input);
         container.appendChild(checkbox);
@@ -240,8 +271,8 @@
         }
         scanning = true;
 
-        progress.hidden = false;
-        progress.textContent = `0 / ${streamers.length}`;
+        status.hidden = false;
+        status.textContent = `0 / ${streamers.length}`;
 
         const promises = streamers.map(username => checkIfLive(username));
 
@@ -253,10 +284,11 @@
                 newLiveStreamers.push(streamers[i]);
             }
 
-            progress.textContent = `${i + 1} / ${streamers.length}`;
+            status.textContent = `${i + 1} / ${streamers.length}`;
         }
 
-        progress.hidden = true;
+        status.hidden = true;
+        status.textContent = "";
         initialized = true;
         liveStreamers = newLiveStreamers;
         liveStreamersLastUpdate = Date.now();
@@ -271,10 +303,11 @@
             const isLive = await checkIfLive(currentLiveStreamer);
             if (!isLive) {
                 currentLiveStreamer = null;
+                await updateLiveStreamers();
             }
         }
 
-        const nthLiveStreamer = parseInt(document.getElementById("twitchSwitcherInput").value) || 0;
+        const nthLiveStreamer = parseInt(document.getElementById("twitch-switcher-input").value) || 0;
         const selectedStreamer = liveStreamers[nthLiveStreamer] || "dioarya";
         if (currentLiveStreamer !== selectedStreamer) {
             currentLiveStreamer = selectedStreamer;
@@ -300,7 +333,7 @@
     updateCurrentStreamer();
 
     document.addEventListener("click", function(event) {
-        const dropdown = document.getElementById("twitch-switcher-dropdown");
+        const dropdown = document.getElementById("twitch-switcher-dropdown-content");
         const button = document.getElementById("twitch-switcher-dropdown-btn");
 
         if (!dropdown.contains(event.target) && !button.contains(event.target)) {
