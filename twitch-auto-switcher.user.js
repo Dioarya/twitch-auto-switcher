@@ -36,6 +36,15 @@
         user-select: none;
     }
 
+    .hidden-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .hidden-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
     .twitch-switcher-hud {
         display: flex;
         flex-direction: row;
@@ -54,6 +63,7 @@
 
     .twitch-switcher-dropdown {
         display: block;
+        position: relative;
         height: 100%;
     }
 
@@ -105,17 +115,19 @@
 
     .twitch-switcher-dropdown-content {
         display: none;
-        position: relative;
+        position: absolute;
         white-space: nowrap;
         background-color: var(--color-hinted-grey-2);
         min-width: 100%;
+        max-height: 30vh;
         flex-direction: column;
-        border-radius: 5px;
+        border-radius: 0px 0px 5px 5px;
+        overflow-y: auto;
         padding: 5px;
     }
 
     .twitch-switcher-dropdown-item {
-        display: inline;
+        display: block;
         border-radius: 5px;
         white-space: nowrap;
         color: white;
@@ -267,10 +279,10 @@
         <div class="unselectable twitch-switcher-dropdown">
             <div class="twitch-switcher-dropdown-btn" id="twitch-switcher-dropdown-btn">
                 <span class="twitch-switcher-label" id="twitch-switcher-label">
-                    Twitch Switcher v${VERSION}
+                    Twitch Switcher
                 </span>
             </div>
-            <div class="twitch-switcher-dropdown-content" id="twitch-switcher-dropdown-content">
+            <div class="hidden-scrollbar twitch-switcher-dropdown-content" id="twitch-switcher-dropdown-content">
 
             </div>
         </div>
