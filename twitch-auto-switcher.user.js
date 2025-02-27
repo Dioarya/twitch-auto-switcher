@@ -14,15 +14,13 @@
 
     // The list below is customizable.
     const streamers = ["papamutt", "markiplier", "moistcr1tikal", "ludwig", "cdawgva", "zajef77", "zy0xxx", "ottomated", "qtcinderella", "dish", "emiru", "rtgame", "slimecicle", "gigguk", "sallyisadog", "tinakitten", "fanfan", "39daph", "kkatamina", "disguisedtoast", "lilypichu", "pokimane", "masayoshi", "quarterjade", "scarra", "yvonnie", "itsryanhiga", "ariasaki", "gmhikaru", "gothamchess", "botezlive", "dantes", "loltyler1", "drututt", "keshaeuw", "hasanabi", "shroud", "btmc", "zhangkuu", "vincewuff", "skaifox", "zephyxus", "toastedtoastertv", "valorant", "lifeline", "tarik", "kyedae", "ninja", "kettletoro", "glittr", "okcode", "xlice", "hilto77", "branonline", "asianguystream", "enviosity", "tsikyo", "doro44", "mtashed", "xqc", "binfy", "zylice", "kariyu", "aceu", "philza", "tubbo", "sneegsnag", "wilbursoot", "quackitytoo", "tapl", "foolish_gamers", "gosugeneraltv", "zyruvias", "jackie_codes", "fedmyster"];
+    const app = document.createElement("div");
     let currentLiveStreamer = null;
     let liveStreamers = [];
     let liveStreamersLastUpdate = Date.now();
-    let autoSwitch = (JSON.parse(localStorage.getItem("nthLiveStreamerList")) ?? []).length != 0;
+    let autoSwitch = false;
     let initialized = false;
     let scanning = false;
-    const status = document.createElement("span");
-    const label = document.createElement("span");
-    const dropdown = document.createElement("div");
     var golden = goldenAvailable();
 
     let style = document.createElement("style");
@@ -38,14 +36,13 @@
 
     .twitch-switcher-hud {
         display: flex;
+        flex-direction: row;
+        gap: 10px;
         align-items: center;
         background-color: var(--color-opac-gd-1);
-        border-radius: 5px;
-        gap: 10px;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        padding-left: 10px;
-        padding-right: 10px;
+        border-radius: 0px 0px 5px 5px;
+        margin: 0px 0px 10px 0px;
+        padding: 5px 10px;
     }
 
     .twitch-switcher-status {
@@ -55,33 +52,80 @@
 
     .twitch-switcher-dropdown {
         display: block;
-        position: relative;
+        height: 100%;
+    }
+
+    .twitch-switcher-dropdown-btn {
+        display: flex;
+        border-radius: 5px;
+        align-items: center;
         width: 100%;
+        height: 100%;
+        background-color: transparent;
+        transition: background-color 0.1s;
+    }
+
+    .twitch-switcher-dropdown-btn:hover {
+        background-color: var(--color-opac-gd-1);
     }
 
     .twitch-switcher-label {
-        border-radius: 5px;
         white-space: nowrap;
+        color: white;
     }
 
     .twitch-switcher-input {
         width: 30px;
     }
 
-    .twitch-switcher-autoswitch {
+    .twitch-switcher-checkbox {
+        position: relative;
+        display: flex;
+        height: 100%;
+        aspect-ratio: 1 / 1;
+    }
 
+    .twitch-switcher-checkbox input {
+        position: relative;
+        cursor: pointer;
+        opacity: 100%;
+        width: 100%;
+        height: 100%;
+    }
+
+    .twitch-switcher-checkmark {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
     }
 
     .twitch-switcher-dropdown-content {
         display: none;
-        position: absolute;
+        position: relative;
         white-space: nowrap;
-        background-color: var(--color-hinted-grey-1);
-        width: 100%;
-        overflow-x: auto;
+        background-color: var(--color-hinted-grey-2);
+        min-width: 100%;
         flex-direction: column;
         border-radius: 5px;
         padding: 5px;
+    }
+
+    .twitch-switcher-dropdown-item {
+        display: inline;
+        border-radius: 5px;
+        white-space: nowrap;
+        color: white;
+        background-color: transparent;
+    }
+
+    .twitch-switcher-dropdown-item:hover {
+        background-color: var(--color-opac-gd-1);
+    }
+
+    .golden {
+        color: gold;
     }
     `;
 
@@ -146,13 +190,15 @@
         }
         if (goldenAvailable()) {
             golden = true;
-            label.style.color = "gold";
+            let label = document.getElementById("twitch-switcher-label");
+            label.classList.add(["golden"]);
             localStorage.setItem("goldenLastSeen", Date.now());
             if (!initialized) await updateLiveStreamers();
         }
     }
 
     function updateDropdown() {
+        const dropdown = document.getElementById("twitch-switcher-dropdown-content")
         dropdown.innerHTML = "";
         for (const streamer of liveStreamers) {
             dropdown.appendChild(createDropdownElement(streamer));
@@ -161,14 +207,13 @@
 
     function createDropdownElement(username) {
         const elementSpan = document.createElement("span");
+        let classList = ["twitch-switcher-dropdown-item"];
         let element = elementSpan;
         let elementA;
         elementSpan.textContent = username;
-        elementSpan.style.whiteSpace = "nowrap";
-        elementSpan.style.color = "white";
 
         if (window.location.href == `https://www.twitch.tv/${username}`) {
-            element.style.color = "gold";
+            classList.push('golden');
         } else {
             elementA = document.createElement("a");
             elementA.href = `/${username}`;
@@ -176,9 +221,7 @@
             element = elementA;
         }
 
-        element.style.borderRadius = "4px";
-        element.addEventListener("mouseover", () => { element.style.backgroundColor = "rgba(83, 83, 95, 0.38)"; });
-        element.addEventListener("mouseout", () => { element.style.backgroundColor = ""; });
+        element.classList.add(...classList);
         return element;
     }
 
@@ -186,7 +229,7 @@
         const dropdown = document.getElementById("twitch-switcher-dropdown-content");
         let nextDisplay = dropdown.style.display === "flex" ? "none" : "flex";
         if (nextDisplay != "none") {
-            if (!initialized) updateLiveStreamers(true);
+            if (!initialized) await updateLiveStreamers(true);
             updateDropdown();
         }
         dropdown.style.display = nextDisplay;
@@ -213,54 +256,56 @@
     }
 
     function createUI() {
-        const container = document.createElement("div");
-        container.className = "twitch-switcher-hud";
+        app.className = "twitch-switcher-hud";
 
-        status.className = "twitch-switcher-status";
-        status.hidden = true;
+        app.innerHTML = `
+        <span class="twitch-switcher-status" id="twitch-switcher-status" hidden>
 
-        const container2 = document.createElement("div");
-        container2.classList = "unselectable twitch-switcher-dropdown";
+        </span>
+        <div class="unselectable twitch-switcher-dropdown">
+            <div class="twitch-switcher-dropdown-btn" id="twitch-switcher-dropdown-btn">
+                <span class="twitch-switcher-label" id="twitch-switcher-label">
+                    Twitch Switcher v0.9.5
+                </span>
+            </div>
+            <div class="twitch-switcher-dropdown-content" id="twitch-switcher-dropdown-content">
 
-        label.textContent = "Twitch Switcher v0.9.5";
-        label.className = "twitch-switcher-label";
-        label.id = "twitch-switcher-dropdown-btn";
-        label.addEventListener("mouseover", () => { label.style.backgroundColor = "var(--color-opac-gd-1)"; });
-        label.addEventListener("mouseout", () => { label.style.backgroundColor = ""; });
-        label.addEventListener("click", toggleDropdown);
-
-        const input = document.createElement("input");
-        input.className = "twitch-switcher-input";
-        input.type = "number";
-        input.min = "0";
-        input.id = "twitch-switcher-input";
-        let nthLiveStreamerList = JSON.parse(localStorage.getItem("nthLiveStreamerList")) ?? [];
-        if (nthLiveStreamerList.length == 0) nthLiveStreamerList = [0];
-        input.value = nthLiveStreamerList.shift();
-        localStorage.setItem("nthLiveStreamerList", JSON.stringify(nthLiveStreamerList));
-
-        const checkbox = document.createElement("input");
-        checkbox.className = "twitch-switcher-autoswitch"
-        checkbox.type = "checkbox";
-        checkbox.checked = autoSwitch;
-        checkbox.addEventListener("change", () => {
-            autoSwitch = checkbox.checked;
-            if (autoSwitch) updateCurrentStreamer();
-        });
-
-        dropdown.className = "twitch-switcher-dropdown-content"
-        dropdown.id = "twitch-switcher-dropdown-content";
-
-        container2.appendChild(label);
-        container2.appendChild(dropdown);
-
-        container.appendChild(status);
-        container.appendChild(container2);
-        container.appendChild(input);
-        container.appendChild(checkbox);
+            </div>
+        </div>
+        <input class="twitch-switcher-input" id="twitch-switcher-input" type="number" min="0" value="0">
+        <div class="twitch-switcher-checkbox">
+            <input id="twitch-switcher-autoswitch" type="checkbox" checked="false">
+            <!-- <span class="twitch-switcher-checkmark"></span> -->
+        </div>
+        `
 
         const target = document.evaluate('//*[@id="root"]/div/div[1]/nav/div/div[3]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-        if (target) target.parentNode.insertBefore(container, target);
+        if (target) target.parentNode.insertBefore(app, target);
+
+        let element;
+        element = document.getElementById("twitch-switcher-dropdown-btn");
+        element.addEventListener("click", toggleDropdown);
+
+        element = document.getElementById("twitch-switcher-autoswitch");
+        element.addEventListener("change", () => {
+            autoSwitch = element.checked;
+            if (autoSwitch) updateCurrentStreamer();
+        });
+    }
+
+    function syncUiState() {
+        let element;
+
+        let nthLiveStreamerList = JSON.parse(localStorage.getItem("nthLiveStreamerList")) ?? []
+        autoSwitch = (nthLiveStreamerList).length != 0;
+
+        element = document.getElementById("twitch-switcher-input");
+        if (nthLiveStreamerList.length == 0) nthLiveStreamerList = [0];
+        element.value = nthLiveStreamerList.shift();
+        localStorage.setItem("nthLiveStreamerList", JSON.stringify(nthLiveStreamerList));
+
+        element = document.getElementById("twitch-switcher-autoswitch");
+        element.checked = autoSwitch;
     }
 
     async function updateLiveStreamers(force = false) {
@@ -270,6 +315,8 @@
             if (!(Date.now() - liveStreamersLastObserved < 10000 || autoSwitch)) return;
         }
         scanning = true;
+
+        const status = document.getElementById("twitch-switcher-status");
 
         status.hidden = false;
         status.textContent = `0 / ${streamers.length}`;
@@ -293,6 +340,7 @@
         liveStreamers = newLiveStreamers;
         liveStreamersLastUpdate = Date.now();
         saveSyncState();
+        updateDropdown();
         scanning = false;
     }
 
@@ -324,6 +372,7 @@
     setInterval(heartbeatGolden, 1000);
 
     createUI();
+    syncUiState();
 
     setInterval(getSyncState, 5000);
     setInterval(updateLiveStreamers, 30000);
@@ -340,5 +389,4 @@
             dropdown.style.display = "none";
         }
     });
-
 })();
