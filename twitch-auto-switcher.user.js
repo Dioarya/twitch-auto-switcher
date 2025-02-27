@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Twitch Auto Switcher
-// @version      0.9.6
+// @version      0.9.7
 // @downloadURL  https://github.com/dioarya/twitch-auto-switcher/raw/master/twitch-auto-switcher.user.js
 // @updateURL    https://github.com/dioarya/twitch-auto-switcher/raw/master/twitch-auto-switcher.user.js
 // @description  Automatically switches to a live Twitch streamer inside the customizable list, which nth *live* streamer chosen customizable per tab
@@ -11,6 +11,8 @@
 
 (function() {
     'use strict';
+
+    const VERSION = "0.9.7";
 
     // The list below is customizable.
     const streamers = ["papamutt", "markiplier", "moistcr1tikal", "ludwig", "cdawgva", "zajef77", "zy0xxx", "ottomated", "qtcinderella", "dish", "emiru", "rtgame", "slimecicle", "gigguk", "sallyisadog", "tinakitten", "fanfan", "39daph", "kkatamina", "disguisedtoast", "lilypichu", "pokimane", "masayoshi", "quarterjade", "scarra", "yvonnie", "itsryanhiga", "ariasaki", "gmhikaru", "gothamchess", "botezlive", "dantes", "loltyler1", "drututt", "keshaeuw", "hasanabi", "shroud", "btmc", "zhangkuu", "vincewuff", "skaifox", "zephyxus", "toastedtoastertv", "valorant", "lifeline", "tarik", "kyedae", "ninja", "kettletoro", "glittr", "okcode", "xlice", "hilto77", "branonline", "asianguystream", "enviosity", "tsikyo", "doro44", "mtashed", "xqc", "binfy", "zylice", "kariyu", "aceu", "philza", "tubbo", "sneegsnag", "wilbursoot", "quackitytoo", "tapl", "foolish_gamers", "gosugeneraltv", "zyruvias", "jackie_codes", "fedmyster"];
@@ -265,7 +267,7 @@
         <div class="unselectable twitch-switcher-dropdown">
             <div class="twitch-switcher-dropdown-btn" id="twitch-switcher-dropdown-btn">
                 <span class="twitch-switcher-label" id="twitch-switcher-label">
-                    Twitch Switcher v0.9.5
+                    Twitch Switcher v${VERSION}
                 </span>
             </div>
             <div class="twitch-switcher-dropdown-content" id="twitch-switcher-dropdown-content">
